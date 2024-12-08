@@ -1,0 +1,192 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="ISO-8859-1">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>Art Gallery</title>
+  <link rel="apple-touch-icon" sizes="180x180" href="./favicons/apple-touch-icon.png">
+  <link rel="icon" type="image/png" sizes="32x32" href="./favicons/favicon-32x32.png">
+  <link rel="icon" type="image/png" sizes="16x16" href="./favicons/favicon-16x16.png">
+  <link rel="manifest" href="./favicons/site.webmanifest">
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/css/bootstrap.min.css" rel="stylesheet" />
+  <link rel="stylesheet" href="styles.css">
+  <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.5.1/jquery.min.js"></script>
+  <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.0-alpha1/dist/js/bootstrap.bundle.min.js"></script>
+  <script>
+    var activeTab = 'home';
+    
+    // Function to display welcome message with username (or "Guest" if not logged in)
+    function displayWelcomeMessage() {
+      let username = localStorage.getItem('username') || "Guest";  // Set username from localStorage or "Guest"
+      document.getElementById('user-greeting').innerText = `Welcome, ${username}!`;
+    }
+
+    // Function to add art to the cart
+    function addToCart(artName, artImage) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || []; // Retrieve the cart from localStorage
+      cart.push({ name: artName, image: artImage }); // Add the new art item to the cart
+      localStorage.setItem('cart', JSON.stringify(cart)); // Save the updated cart to localStorage
+      alert(`${artName} has been added to your cart!`); // Notify the user
+      updateCartDisplay(); // Update the cart UI
+    }
+
+    // Function to update the cart display
+    function updateCartDisplay() {
+      let cart = JSON.parse(localStorage.getItem('cart')) || []; // Get the current cart from localStorage
+      let cartItemsList = document.getElementById('cart-items');
+      cartItemsList.innerHTML = '';  // Clear the current cart items
+      
+      // Loop through the cart items and create a list for each item
+      cart.forEach((item, index) => {
+        let listItem = document.createElement('li');
+        listItem.classList.add('list-group-item');
+        listItem.innerHTML = `
+          <img src="${item.image}" alt="${item.name}" width="50" />
+          ${item.name}
+          <button class="btn btn-danger btn-sm float-end" onclick="removeFromCart(${index})">Remove</button>
+        `;
+        cartItemsList.appendChild(listItem);
+      });
+    }
+
+    // Function to remove an item from the cart
+    function removeFromCart(index) {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      cart.splice(index, 1); // Remove the item at the specified index
+      localStorage.setItem('cart', JSON.stringify(cart)); // Update the cart in localStorage
+      updateCartDisplay(); // Update the cart UI
+    }
+
+    // Function to proceed to payment
+    function proceedToPayment() {
+      let cart = JSON.parse(localStorage.getItem('cart')) || [];
+      if (cart.length === 0) {
+        alert("Your cart is empty. Please add some items before proceeding to payment.");
+        return;
+      }
+
+      if (confirm("Are you sure you want to proceed to payment?")) {
+        localStorage.setItem('cartForPayment', JSON.stringify(cart)); // Store cart for payment
+        window.location.href = 'payment.html'; // Redirect to the payment page
+      }
+    }
+
+    // Display welcome message and update cart on page load
+    window.onload = function() {
+      displayWelcomeMessage();
+      updateCartDisplay();
+    }
+  </script>
+</head>
+<body>
+  <header>
+    <nav class="navbar navbar-expand-sm bg-light" style="margin-bottom: 0px">
+      <a class="navbar-brand">
+        <img src="logo.png" alt="Art Gallery logo" width="60" height="30px">
+      </a>
+
+      <button style="background-color: white;" class="navbar-toggler"
+        type="button" data-bs-toggle="collapse" data-bs-target="#navbarNav"
+        aria-controls="navbarNav" aria-expanded="false"
+        aria-label="Toggle navigation">
+        <span class="navbar-toggler-icon" style="color: #fff; font-size: 28px;"></span>
+      </button>
+
+      <div class="collapse navbar-collapse" id="navbarNav">
+        <ul class="navbar-nav">
+          <li class="nav-item"><a class="nav-link" href="viewart" id="home">Home</a></li>
+          <li class="nav-item"><a class="nav-link" href="viewart" id="arts">Available Art</a></li>
+          <li class="nav-item"><a class="nav-link glyphicon glyphicon-shopping-cart" href="cart" id="cart">Cart</a></li>
+          <li class="nav-item"><a class="nav-link" href="logout" id="logout">Logout</a></li>
+        </ul>
+      </div>
+    </nav>
+  </header>
+
+  <main class="container my-4">
+    <div id="welcome-message">
+      <h2>Welcome to the Art Gallery!</h2>
+      <p id="user-greeting"></p>
+    </div>
+
+    <!-- Display Available Art -->
+    <div class="row">
+      <div class="col-md-4">
+        <div class="card">
+          <img src="art1.jpeg" class="card-img-top" alt="Art 1">
+          <div class="card-body">
+            <h5 class="card-title">Mona Lisa</h5>
+            <p class="card-text">A famous portrait painting by Leonardo da Vinci.</p>
+            <button class="btn btn-warning" onclick="addToCart('Mona Lisa', 'art1.jpeg')">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <img src="art2.jpg" class="card-img-top" alt="Art 2">
+          <div class="card-body">
+            <h5 class="card-title">Starry Night</h5>
+            <p class="card-text">A masterpiece by Vincent van Gogh, depicting a starry sky over a village.</p>
+            <button class="btn btn-warning" onclick="addToCart('Starry Night', 'art2.jpg')">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <img src="art3.avif" class="card-img-top" alt="Art 3">
+          <div class="card-body">
+            <h5 class="card-title">The Scream</h5>
+            <p class="card-text">A famous expressionist painting by Edvard Munch.</p>
+            <button class="btn btn-warning" onclick="addToCart('The Scream', 'art3.avif')">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <img src="art4.jpeg" class="card-img-top" alt="Art 4">
+          <div class="card-body">
+            <h5 class="card-title">The Persistence of Memory</h5>
+            <p class="card-text">A surreal painting by Salvador Dalí, depicting melting clocks.</p>
+            <button class="btn btn-warning" onclick="addToCart('The Persistence of Memory', 'art4.jpeg')">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <img src="art5.avif" class="card-img-top" alt="Art 5">
+          <div class="card-body">
+            <h5 class="card-title">Guernica</h5>
+            <p class="card-text">A powerful political artwork by Pablo Picasso, portraying the Spanish Civil War.</p>
+            <button class="btn btn-warning" onclick="addToCart('Guernica', 'art5.avif')">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+
+      <div class="col-md-4">
+        <div class="card">
+          <img src="art6.webp" class="card-img-top" alt="Art 6">
+          <div class="card-body">
+            <h5 class="card-title">The Kiss</h5>
+            <p class="card-text">An iconic artwork by Gustav Klimt that depicts a couple in a loving embrace.</p>
+            <button class="btn btn-warning" onclick="addToCart('The Kiss', 'art6.webp')">Add to Cart</button>
+          </div>
+        </div>
+      </div>
+    </div>
+
+    <div id="cart-section">
+      <h3>Your Cart</h3>
+      <ul id="cart-items" class="list-group"></ul>
+      <button class="btn btn-success" onclick="proceedToPayment()">Proceed to Payment</button>
+    </div>
+  </main>
+
+  <footer class="bg-dark text-white text-center p-3">
+    <p>&copy; 2024 Art Gallery | All Rights Reserved</p>
+  </footer>
+</body>
+</html>
